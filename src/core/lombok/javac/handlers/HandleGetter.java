@@ -293,22 +293,13 @@ public class HandleGetter extends JavacAnnotationHandler<Getter> {
     }
 
     public List<JCStatement> createSimpleGetterBody(JavacTreeMaker treeMaker, JavacNode field, String transform) {
-        field.addWarning("Testing things: '" + transform + "'");
-//        JCExpression accessor = createFieldAccessor(treeMaker, field, FieldAccess.ALWAYS_FIELD);
-        JCVariableDecl fieldDecl = (JCVariableDecl) field.get();
-////        List<JCStatement> statements;
+        JCExpression accessor = createFieldAccessor(treeMaker, field, FieldAccess.ALWAYS_FIELD);
         if (transform != null && !transform.equals("")) {
             JCExpression transformDots = JavacHandlerUtil.chainDots(field, "this", transform);
-
-            JCTree.JCMethodInvocation transformInvocation = treeMaker.Apply(List.<JCExpression>nil(), transformDots, List.<JCExpression>of(treeMaker.Ident(fieldDecl.name)));
-            field.addWarning("Calling " + transform + " for " + field.getName());
+            JCTree.JCMethodInvocation transformInvocation = treeMaker.Apply(List.<JCExpression>nil(), transformDots, List.<JCExpression>of(accessor));
             return List.<JCStatement>of(treeMaker.Return(transformInvocation));
-        } else {
-////            field.addWarning("No transform for " + field.getName());
-//            return List.<JCStatement>of(treeMaker.Return(treeMaker.Ident(fieldDecl.name)));
         }
-        return List.<JCStatement>of(treeMaker.Return(treeMaker.Literal("Hello")));
-
+        return List.<JCStatement>of(treeMaker.Return(accessor));
     }
 
     private static final String AR = "java.util.concurrent.atomic.AtomicReference";
