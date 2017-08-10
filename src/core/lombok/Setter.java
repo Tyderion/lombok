@@ -94,8 +94,7 @@ public @interface Setter {
 	 */
 	String transform() default "";
 
-//	Exception[] exceptions() default {};
-//	String[] exceptions() default {};
+	Exception[] exceptions() default {};
 
 	/**
 	  * Placeholder annotation to enable the placement of annotations on the generated code.

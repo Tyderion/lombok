@@ -130,42 +130,18 @@ public class HandleSetter extends JavacAnnotationHandler<Setter> {
 		JavacNode node = annotationNode.up();
 		Setter annotationInstance = annotation.getInstance();
 		AccessLevel level = annotationInstance.value();
+		String transform = annotationInstance.transform();
 
 		if (level == AccessLevel.NONE || node == null) return;
 
 		List<JCAnnotation> onMethod = unboxAndRemoveAnnotationParameter(ast, "onMethod", "@Setter(onMethod", annotationNode);
 		List<JCAnnotation> onParam = unboxAndRemoveAnnotationParameter(ast, "onParam", "@Setter(onParam", annotationNode);
-//		List<JCAnnotation> onExceptions = unboxAndRemoveAnnotationParameter(ast, "exceptions", "@Setter(exceptions", annotationNode);
-		String transform = annotationInstance.transform();
+		List<JCAnnotation> onExceptions = unboxAndRemoveAnnotationParameter(ast, "exceptions", "@Setter(exceptions", annotationNode);
 
-//		node.addWarning("Extracting exceptions " + (annotationInstance == null));
-
-//		node.addWarning("Extracting exceptions " + (annotationInstance.exception() == null));
-//		Class clazz = annotationInstance.exception();
-//		String[] excepts = annotationInstance.exceptions();
-//		node.addWarning("Extracted " + clazz.getName());
-//		node.addWarning("Extracted " + onExceptions.toString());
-//		node.addWarning("Extracted " + Arrays.toString(classes))
-//        JCAnnotation anno = onExceptions.head;
-//		node.addWarning("ANnotation: " + anno.getArguments().head);
-//		node.addWarning("Test: ");
-
-		String[] exceptions = null;
-//		String[] exceptions = new String[onExceptions.size()];
-//		for (int i = 0; i < onExceptions.size(); i++) {
-//			exceptions[i] = onExceptions.get(i).getArguments().toString().replace(".class", "");
-//		}
-
-		node.addWarning(Arrays.toString(exceptions));
-
-
-//		List<Class<? extends Exception>> clazzes= List.nil();
-//		for (Setter.ExceptionClass anno : classes) {
-//			clazzes.add(anno.value());
-//		}
-
-
-
+		String[] exceptions = new String[onExceptions.size()];
+		for (int i = 0; i < onExceptions.size(); i++) {
+			exceptions[i] = onExceptions.get(i).getArguments().toString().replace(".class", "");
+		}
 
 		switch (node.getKind()) {
 		case FIELD:
@@ -312,23 +288,22 @@ public class HandleSetter extends JavacAnnotationHandler<Setter> {
 		List<JCVariableDecl> parameters = List.of(param);
 		List<JCExpression> throwsClauses = List.nil();
 		JCExpression annotationMethodDefaultValue = null;
-		field.addWarning("Adding throws" + Arrays.toString(exceptions));
-//		if (throwsExceptions) {
-//			for (String exception : exceptions) {
-//			    throwsClauses.add(treeMaker.Ident(field.toName(exception)));
-//			}
-//		}
-		throwsClauses.add(treeMaker.Ident(field.toName("ClassNotFoundException")));
+
+		if (throwsExceptions) {
+			JCExpression[] throwClasses = new JCExpression[exceptions.length];
+			for (int i = 0; i < exceptions.length; i++) {
+				throwClasses[i] = treeMaker.Ident(field.toName(exceptions[i]));
+			}
+			throwsClauses = List.from(throwClasses);
+		}
 
 		List<JCAnnotation> annsOnMethod = copyAnnotations(onMethod);
 		if (isFieldDeprecated(field) || deprecate) {
 			annsOnMethod = annsOnMethod.prepend(treeMaker.Annotation(genJavaLangTypeRef(field, "Deprecated"), List.<JCExpression>nil()));
 		}
-		field.addWarning("Generate method");
 
 		JCMethodDecl decl = recursiveSetGeneratedBy(treeMaker.MethodDef(treeMaker.Modifiers(access, annsOnMethod), methodName, methodType,
 				methodGenericParams, parameters, throwsClauses, methodBody, annotationMethodDefaultValue), source.get(), field.getContext());
-		field.addWarning("Method generated");
 
 		copyJavadoc(field, decl, CopyJavadoc.SETTER);
 		return decl;
