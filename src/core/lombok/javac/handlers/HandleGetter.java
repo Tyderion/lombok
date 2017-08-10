@@ -293,20 +293,21 @@ public class HandleGetter extends JavacAnnotationHandler<Getter> {
     }
 
     public List<JCStatement> createSimpleGetterBody(JavacTreeMaker treeMaker, JavacNode field, String transform) {
-        field.addWarning("Testing things");
-        JCExpression accessor = createFieldAccessor(treeMaker, field, FieldAccess.ALWAYS_FIELD);
+        field.addWarning("Testing things: '" + transform + "'");
+//        JCExpression accessor = createFieldAccessor(treeMaker, field, FieldAccess.ALWAYS_FIELD);
         JCVariableDecl fieldDecl = (JCVariableDecl) field.get();
-        List<JCStatement> statements;
+////        List<JCStatement> statements;
         if (transform != null && !transform.equals("")) {
             JCExpression transformDots = JavacHandlerUtil.chainDots(field, "this", transform);
 
             JCTree.JCMethodInvocation transformInvocation = treeMaker.Apply(List.<JCExpression>nil(), transformDots, List.<JCExpression>of(treeMaker.Ident(fieldDecl.name)));
             field.addWarning("Calling " + transform + " for " + field.getName());
-            return List.<JCStatement>of(treeMaker.Call(transformInvocation), treeMaker.Return(treeMaker.Ident(fieldDecl.name)));
+            return List.<JCStatement>of(treeMaker.Return(transformInvocation));
         } else {
-            field.addWarning("No transform for " + field.getName());
-            return List.<JCStatement>of(treeMaker.Return(treeMaker.Ident(fieldDecl.name)));
+////            field.addWarning("No transform for " + field.getName());
+//            return List.<JCStatement>of(treeMaker.Return(treeMaker.Ident(fieldDecl.name)));
         }
+        return List.<JCStatement>of(treeMaker.Return(treeMaker.Literal("Hello")));
 
     }
 
