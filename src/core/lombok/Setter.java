@@ -94,7 +94,12 @@ public @interface Setter {
 	 */
 	String transform() default "";
 
-	Exception[] exceptions() default {};
+	/**
+	 * Use this field to specify the exceptions the setter can throw
+	 * Will be ignored if {@link #transform()} is not set because a normal setter cannot throw an exception
+	 * @return The exception classes to throw
+	 */
+	Ex[] exceptions() default {};
 
 	/**
 	  * Placeholder annotation to enable the placement of annotations on the generated code.
@@ -107,7 +112,7 @@ public @interface Setter {
 
 	@Retention(RetentionPolicy.SOURCE)
 	@Target({})
-	@interface Exception {
+	@interface Ex {
 		Class<? extends java.lang.Exception> value();
 	}
 }
