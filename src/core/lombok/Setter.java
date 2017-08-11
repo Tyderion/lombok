@@ -21,6 +21,7 @@
  */
 package lombok;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -83,7 +84,24 @@ public @interface Setter {
 	 * @return List of annotations to apply to the generated parameter in the setter method.
 	 */
 	AnyAnnotation[] onParam() default {};
-	
+
+	/**
+	 * If this is set to anything but the empty string "" the method of this name will be called on the object before
+	 * writing the value to the underlying instance field.
+	 * The method has to take one value of the type of the field the annotation is on as argument
+	 * The method can be overloaded to handly any amount of different types
+	 * @return the name of the method to call
+	 */
+	String transform() default "";
+
+	/**
+	 * Set to true to make the setter throw checked exceptions
+	 * by adding <code>throws Exception</code> to the method definition.
+	 * Will be ignored if transform is not set
+	 * @return The true if the setter should throw exceptions
+	 */
+	boolean throwsException() default false;
+
 	/**
 	  * Placeholder annotation to enable the placement of annotations on the generated code.
 	  * @deprecated Don't use this annotation, ever - Read the documentation.
@@ -92,4 +110,10 @@ public @interface Setter {
 	@Retention(RetentionPolicy.SOURCE)
 	@Target({})
 	@interface AnyAnnotation {}
+
+	@Retention(RetentionPolicy.SOURCE)
+	@Target({})
+	@interface Ex {
+		Class<? extends java.lang.Exception> value();
+	}
 }

@@ -72,6 +72,15 @@ public @interface Getter {
 	AnyAnnotation[] onMethod() default {};
 	
 	boolean lazy() default false;
+
+	/**
+	 * If this is set to anything but the empty string "" the method of this name will be called on the object before
+	 * returning the value
+	 * The method has to take one value of the type of the field the annotation is on as Argument
+	 * The method can be overloaded to handly any amount of different types
+	 * @return the name of the method to call
+	 */
+	String transform() default "";
 	
 	/**
 	 * Placeholder annotation to enable the placement of annotations on the generated code.

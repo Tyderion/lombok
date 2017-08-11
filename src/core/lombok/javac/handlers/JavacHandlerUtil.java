@@ -826,7 +826,7 @@ public class JavacHandlerUtil {
 		
 		GetterMethod getter = lookForGetter ? findGetter(field) : null;
 		JCVariableDecl fieldDecl = (JCVariableDecl) field.get();
-		
+
 		if (getter == null) {
 			if (receiver == null) {
 				if ((fieldDecl.mods.flags & Flags.STATIC) == 0) {
@@ -839,7 +839,7 @@ public class JavacHandlerUtil {
 					}
 				}
 			}
-			
+
 			return receiver == null ? maker.Ident(fieldDecl.name) : maker.Select(receiver, fieldDecl.name);
 		}
 		
