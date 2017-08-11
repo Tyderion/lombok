@@ -95,11 +95,12 @@ public @interface Setter {
 	String transform() default "";
 
 	/**
-	 * Use this field to specify the exceptions the setter can throw
-	 * Will be ignored if {@link #transform()} is not set because a normal setter cannot throw an exception
-	 * @return The exception classes to throw
+	 * Set to true to make the setter throw checked exceptions
+	 * by adding <code>throws Exception</code> to the method definition.
+	 * Will be ignored if transform is not set
+	 * @return The true if the setter should throw exceptions
 	 */
-	Ex[] exceptions() default {};
+	boolean throwsException() default false;
 
 	/**
 	  * Placeholder annotation to enable the placement of annotations on the generated code.
